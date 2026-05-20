@@ -18,6 +18,7 @@ import com.sanju.expensetracker.ui.auth.LoginActivity
 import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
 import kotlinx.coroutines.launch
+import androidx.recyclerview.widget.LinearLayoutManager
 
 class HomeActivity : AppCompatActivity() {
 
@@ -25,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val expenseRepository = ExpenseRepository()
+    private lateinit var recentExpenseAdapter: ExpenseAdapter
 
     private val notificationPermissionLauncher =
         registerForActivityResult(
@@ -48,6 +50,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         showUserInfo()
+        setupRecentTransactions()
         setupClickListeners()
     }
 
@@ -61,6 +64,22 @@ class HomeActivity : AppCompatActivity() {
 
         binding.tvWelcome.text = getString(R.string.welcome)
         binding.tvSubtitle.text = email
+    }
+
+    private fun setupRecentTransactions() {
+        recentExpenseAdapter = ExpenseAdapter(
+            onEditClick = {
+                openScreen(ExpenseListActivity::class.java)
+            },
+            onDeleteClick = {
+                openScreen(ExpenseListActivity::class.java)
+            }
+        )
+
+        binding.recyclerRecentExpenses.apply {
+            layoutManager = LinearLayoutManager(this@HomeActivity)
+            adapter = recentExpenseAdapter
+        }
     }
 
     private fun setupClickListeners() {
@@ -151,6 +170,9 @@ class HomeActivity : AppCompatActivity() {
                 binding.tvIncome.text = CurrencyUtils.formatAmount(income)
                 binding.tvExpense.text = CurrencyUtils.formatAmount(expense)
                 binding.tvBalance.text = CurrencyUtils.formatAmount(balance)
+
+                loadRecentTransactions()
+
             }
 
             result.onFailure {
@@ -158,6 +180,32 @@ class HomeActivity : AppCompatActivity() {
                     this@HomeActivity,
                     it.message ?: getString(R.string.failed_to_load_summary),
                     Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun loadRecentTransactions() {
+
+        lifecycleScope.launch {
+
+            val result = expenseRepository.getUserExpenses()
+
+            result.onSuccess { expenses ->
+
+                val recentExpenses = expenses
+                    .sortedByDescending { it.createdAt }
+                    .take(5)
+
+                recentExpenseAdapter.updateExpenses(recentExpenses)
+            }
+
+            result.onFailure {
+
+                Toast.makeText(
+                    this@HomeActivity,
+                    it.message,
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
