@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 class ExpenseListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityExpenseListBinding
+    private lateinit var expenseAdapter: ExpenseAdapter
 
     private val expenseRepository = ExpenseRepository()
 
@@ -43,13 +44,21 @@ class ExpenseListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerExpenses.layoutManager =
-            LinearLayoutManager(this)
+        expenseAdapter = ExpenseAdapter(
+            onEditClick = { expense ->
+                openEditExpenseScreen(expense)
+            },
+            onDeleteClick = { expense ->
+                deleteExpense(expense.id)
+            }
+        )
+
+        binding.recyclerExpenses.layoutManager = LinearLayoutManager(this)
+        binding.recyclerExpenses.adapter = expenseAdapter
     }
 
     private fun setupSearch() {
         binding.etSearch.addTextChangedListener(object : TextWatcher {
-
             override fun beforeTextChanged(
                 s: CharSequence?,
                 start: Int,
@@ -72,7 +81,6 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private fun setupFilter() {
         binding.rgFilter.setOnCheckedChangeListener { _, checkedId ->
-
             selectedFilter = when (checkedId) {
                 binding.rbIncome.id -> getString(R.string.income)
                 binding.rbExpense.id -> getString(R.string.expense)
@@ -106,33 +114,18 @@ class ExpenseListActivity : AppCompatActivity() {
         val searchText = binding.etSearch.text.toString().trim().lowercase()
 
         val filteredExpenses = allExpenses.filter { expense ->
-
             val matchesSearch =
                 expense.title.lowercase().contains(searchText) ||
                         expense.category.lowercase().contains(searchText)
 
             val matchesType =
                 selectedFilter == getString(R.string.all) ||
-                        expense.type == selectedFilter
+                        expense.type.equals(selectedFilter, ignoreCase = true)
 
             matchesSearch && matchesType
         }
 
-        showExpenses(filteredExpenses)
-    }
-
-    private fun showExpenses(expenses: List<Expense>) {
-        val adapter = ExpenseAdapter(
-            expenses = expenses,
-            onEditClick = { expense ->
-                openEditExpenseScreen(expense)
-            },
-            onDeleteClick = { expense ->
-                deleteExpense(expense.id)
-            }
-        )
-
-        binding.recyclerExpenses.adapter = adapter
+        expenseAdapter.updateExpenses(filteredExpenses)
     }
 
     private fun openEditExpenseScreen(expense: Expense) {

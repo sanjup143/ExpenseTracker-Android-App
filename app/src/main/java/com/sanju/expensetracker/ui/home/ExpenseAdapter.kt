@@ -9,10 +9,11 @@ import com.sanju.expensetracker.databinding.ItemExpenseBinding
 import com.sanju.expensetracker.utils.CurrencyUtils
 
 class ExpenseAdapter(
-    private val expenses: List<Expense>,
     private val onEditClick: (Expense) -> Unit,
     private val onDeleteClick: (Expense) -> Unit
 ) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
+
+    private val expenses = mutableListOf<Expense>()
 
     inner class ExpenseViewHolder(
         private val binding: ItemExpenseBinding
@@ -21,6 +22,7 @@ class ExpenseAdapter(
         fun bind(expense: Expense) {
             binding.tvTitle.text = expense.title
             binding.tvAmount.text = CurrencyUtils.formatAmount(expense.amount)
+
             binding.tvCategory.text = binding.root.context.getString(
                 R.string.expense_category_type,
                 expense.category,
@@ -37,27 +39,24 @@ class ExpenseAdapter(
         }
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ExpenseViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
         val binding = ItemExpenseBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-
         return ExpenseViewHolder(binding)
     }
 
-    override fun onBindViewHolder(
-        holder: ExpenseViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         holder.bind(expenses[position])
     }
 
-    override fun getItemCount(): Int {
-        return expenses.size
+    override fun getItemCount(): Int = expenses.size
+
+    fun updateExpenses(newExpenses: List<Expense>) {
+        expenses.clear()
+        expenses.addAll(newExpenses)
+        notifyDataSetChanged()
     }
 }
