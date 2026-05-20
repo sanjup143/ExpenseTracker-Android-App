@@ -13,10 +13,12 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddExpenseBinding
 
-    private val expenseRepository = ExpenseRepository()
+    private lateinit var expenseRepository: ExpenseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityAddExpenseBinding.inflate(layoutInflater)
         setContentView(binding.root)

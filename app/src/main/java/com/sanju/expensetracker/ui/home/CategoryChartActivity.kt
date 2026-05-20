@@ -21,10 +21,12 @@ class CategoryChartActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCategoryChartBinding
 
-    private val expenseRepository = ExpenseRepository()
+    private lateinit var expenseRepository: ExpenseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityCategoryChartBinding.inflate(layoutInflater)
         setContentView(binding.root)

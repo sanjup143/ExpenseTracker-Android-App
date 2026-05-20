@@ -1,16 +1,25 @@
 package com.sanju.expensetracker.data.repository
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.sanju.expensetracker.data.local.ExpenseDatabase
+import com.sanju.expensetracker.data.local.ExpenseMapper
 import com.sanju.expensetracker.data.model.Budget
 import com.sanju.expensetracker.data.model.Expense
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 
-class ExpenseRepository {
+class ExpenseRepository(
+    context: Context
+) {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
+
+    private val expenseDao = ExpenseDatabase
+        .getDatabase(context)
+        .expenseDao()
 
     suspend fun addExpense(
         title: String,
@@ -37,10 +46,18 @@ class ExpenseRepository {
                 type = type,
                 userId = userId,
                 month = month,
-                year = year
+                year = year,
+                createdAt = System.currentTimeMillis()
             )
 
-            documentRef.set(expense).await()
+            firestore.collection("expenses")
+                .document(expense.id)
+                .set(expense)
+                .await()
+
+            expenseDao.insertExpense(
+                ExpenseMapper.toEntity(expense)
+            )
 
             Result.success("Expense saved successfully")
 
@@ -63,10 +80,22 @@ class ExpenseRepository {
             val expenses = snapshot.toObjects(Expense::class.java)
                 .sortedByDescending { it.createdAt }
 
+            expenseDao.clearExpenses()
+            expenseDao.insertExpenses(
+                expenses.map { ExpenseMapper.toEntity(it) }
+            )
+
             Result.success(expenses)
 
         } catch (e: Exception) {
-            Result.failure(e)
+            val localExpenses = expenseDao.getAllExpenses()
+                .map { ExpenseMapper.toExpense(it) }
+
+            if (localExpenses.isNotEmpty()) {
+                Result.success(localExpenses)
+            } else {
+                Result.failure(e)
+            }
         }
     }
 
@@ -77,6 +106,8 @@ class ExpenseRepository {
                 .document(expenseId)
                 .delete()
                 .await()
+
+            expenseDao.deleteExpense(expenseId)
 
             Result.success("Expense deleted successfully")
 
@@ -106,6 +137,19 @@ class ExpenseRepository {
                 .update(updates)
                 .await()
 
+            val oldExpense = expenseDao.getExpenseById(expenseId)
+
+            if (oldExpense != null) {
+                val updatedExpense = oldExpense.copy(
+                    title = title,
+                    amount = amount,
+                    category = category,
+                    type = type
+                )
+
+                expenseDao.insertExpense(updatedExpense)
+            }
+
             Result.success("Expense updated successfully")
 
         } catch (e: Exception) {
@@ -115,23 +159,17 @@ class ExpenseRepository {
 
     suspend fun getExpenseSummary(): Result<Triple<Double, Double, Double>> {
 
-        return try {
-            val userId = firebaseAuth.currentUser?.uid
-                ?: return Result.failure(Exception("User not logged in"))
+        val expensesResult = getUserExpenses()
 
-            val snapshot = firestore.collection("expenses")
-                .whereEqualTo("userId", userId)
-                .get()
-                .await()
-
-            val expenses = snapshot.toObjects(Expense::class.java)
-
-            val summary = calculateSummary(expenses)
-
-            Result.success(summary)
-
-        } catch (e: Exception) {
-            Result.failure(e)
+        return if (expensesResult.isSuccess) {
+            Result.success(
+                calculateSummary(expensesResult.getOrNull().orEmpty())
+            )
+        } else {
+            Result.failure(
+                expensesResult.exceptionOrNull()
+                    ?: Exception("Failed to load summary")
+            )
         }
     }
 
@@ -157,7 +195,16 @@ class ExpenseRepository {
             Result.success(expenses)
 
         } catch (e: Exception) {
-            Result.failure(e)
+            val localExpenses = expenseDao.getAllExpenses()
+                .map { ExpenseMapper.toExpense(it) }
+                .filter { it.month == month && it.year == year }
+                .sortedByDescending { it.createdAt }
+
+            if (localExpenses.isNotEmpty()) {
+                Result.success(localExpenses)
+            } else {
+                Result.failure(e)
+            }
         }
     }
 
@@ -166,27 +213,20 @@ class ExpenseRepository {
         year: Int
     ): Result<Triple<Double, Double, Double>> {
 
-        return try {
-            val monthlyExpensesResult = getMonthlyExpenses(
-                month = month,
-                year = year
+        val monthlyExpensesResult = getMonthlyExpenses(
+            month = month,
+            year = year
+        )
+
+        return if (monthlyExpensesResult.isSuccess) {
+            Result.success(
+                calculateSummary(monthlyExpensesResult.getOrNull().orEmpty())
             )
-
-            if (monthlyExpensesResult.isFailure) {
-                return Result.failure(
-                    monthlyExpensesResult.exceptionOrNull()
-                        ?: Exception("Failed to load monthly expenses")
-                )
-            }
-
-            val expenses = monthlyExpensesResult.getOrNull().orEmpty()
-
-            val summary = calculateSummary(expenses)
-
-            Result.success(summary)
-
-        } catch (e: Exception) {
-            Result.failure(e)
+        } else {
+            Result.failure(
+                monthlyExpensesResult.exceptionOrNull()
+                    ?: Exception("Failed to load monthly summary")
+            )
         }
     }
 
@@ -207,11 +247,7 @@ class ExpenseRepository {
 
         val balance = totalIncome - totalExpense
 
-        return Triple(
-            totalIncome,
-            totalExpense,
-            balance
-        )
+        return Triple(totalIncome, totalExpense, balance)
     }
 
     suspend fun saveMonthlyBudget(
@@ -273,20 +309,12 @@ class ExpenseRepository {
 
     suspend fun getExpenseByCategory(): Result<Map<String, Double>> {
 
-        return try {
-            val userId = firebaseAuth.currentUser?.uid
-                ?: return Result.failure(Exception("User not logged in"))
+        val expensesResult = getUserExpenses()
 
-            val snapshot = firestore.collection("expenses")
-                .whereEqualTo("userId", userId)
-                .get()
-                .await()
-
-            val expenses = snapshot.toObjects(Expense::class.java)
-
+        return if (expensesResult.isSuccess) {
             val categoryMap = mutableMapOf<String, Double>()
 
-            expenses.forEach { expense ->
+            expensesResult.getOrNull().orEmpty().forEach { expense ->
                 if (expense.type == "Expense") {
                     val currentAmount = categoryMap[expense.category] ?: 0.0
                     categoryMap[expense.category] = currentAmount + expense.amount
@@ -294,9 +322,11 @@ class ExpenseRepository {
             }
 
             Result.success(categoryMap)
-
-        } catch (e: Exception) {
-            Result.failure(e)
+        } else {
+            Result.failure(
+                expensesResult.exceptionOrNull()
+                    ?: Exception("Failed to load category data")
+            )
         }
     }
 }

@@ -19,13 +19,15 @@ class ExpenseListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityExpenseListBinding
     private lateinit var expenseAdapter: ExpenseAdapter
 
-    private val expenseRepository = ExpenseRepository()
+    private lateinit var expenseRepository: ExpenseRepository
 
     private var allExpenses: List<Expense> = emptyList()
     private var selectedFilter: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityExpenseListBinding.inflate(layoutInflater)
         setContentView(binding.root)

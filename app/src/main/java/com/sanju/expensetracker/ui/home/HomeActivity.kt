@@ -25,7 +25,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
 
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val expenseRepository = ExpenseRepository()
+
+    private lateinit var expenseRepository: ExpenseRepository
     private lateinit var recentExpenseAdapter: ExpenseAdapter
 
     private val notificationPermissionLauncher =
@@ -45,6 +46,8 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -16,7 +16,7 @@ class BudgetActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBudgetBinding
 
-    private val expenseRepository = ExpenseRepository()
+    private lateinit var expenseRepository: ExpenseRepository
 
     private val months = listOf(
         "January",
@@ -35,6 +35,8 @@ class BudgetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityBudgetBinding.inflate(layoutInflater)
         setContentView(binding.root)

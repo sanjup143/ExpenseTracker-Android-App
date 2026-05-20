@@ -19,10 +19,12 @@ class PdfReportActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPdfReportBinding
 
-    private val expenseRepository = ExpenseRepository()
+    private lateinit var expenseRepository: ExpenseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityPdfReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
