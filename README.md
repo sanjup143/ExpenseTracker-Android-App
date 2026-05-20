@@ -17,6 +17,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Dark Mode UI
 - Firebase Firestore Database
 - Search and filter expenses by title, category, income, and expense
+- Recent transactions on dashboard
 
 ## Tech Stack
 
