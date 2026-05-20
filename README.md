@@ -18,6 +18,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Firebase Firestore Database
 - Search and filter expenses by title, category, income, and expense
 - Recent transactions on dashboard
+- Room Database offline cache support
 
 ## Tech Stack
 
@@ -28,6 +29,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - MPAndroidChart
 - RecyclerView
 - Material Design
+- Room Database
 
 ## Screenshots
 
