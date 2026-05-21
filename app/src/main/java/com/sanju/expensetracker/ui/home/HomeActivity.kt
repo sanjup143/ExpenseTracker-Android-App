@@ -5,28 +5,32 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.sanju.expensetracker.R
-import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.databinding.ActivityHomeBinding
 import com.sanju.expensetracker.ui.auth.LoginActivity
+import com.sanju.expensetracker.ui.viewmodel.ExpenseViewModel
 import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
 import kotlinx.coroutines.launch
-import androidx.recyclerview.widget.LinearLayoutManager
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
 
+    private val expenseViewModel: ExpenseViewModel by viewModels()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    private lateinit var expenseRepository: ExpenseRepository
     private lateinit var recentExpenseAdapter: ExpenseAdapter
 
     private val notificationPermissionLauncher =
@@ -47,19 +51,19 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        expenseRepository = ExpenseRepository(applicationContext)
-
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         showUserInfo()
         setupRecentTransactions()
         setupClickListeners()
+        setupSwipeRefresh()
+        observeViewModel()
     }
 
     override fun onResume() {
         super.onResume()
-        loadSummary()
+        refreshDashboard()
     }
 
     private fun showUserInfo() {
@@ -82,6 +86,79 @@ class HomeActivity : AppCompatActivity() {
         binding.recyclerRecentExpenses.apply {
             layoutManager = LinearLayoutManager(this@HomeActivity)
             adapter = recentExpenseAdapter
+        }
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setOnRefreshListener {
+            refreshDashboard()
+        }
+    }
+
+    private fun refreshDashboard() {
+        expenseViewModel.loadSummary()
+        expenseViewModel.loadExpenses()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                launch {
+                    expenseViewModel.summary.collect { summary ->
+                        val income = summary.first
+                        val expense = summary.second
+                        val balance = summary.third
+
+                        binding.tvIncome.text =
+                            CurrencyUtils.formatAmount(income)
+
+                        binding.tvExpense.text =
+                            CurrencyUtils.formatAmount(expense)
+
+                        binding.tvBalance.text =
+                            CurrencyUtils.formatAmount(balance)
+                    }
+                }
+
+                launch {
+                    expenseViewModel.isLoading.collect { isLoading ->
+                        binding.swipeRefresh.isRefreshing = isLoading
+                    }
+                }
+
+                launch {
+                    expenseViewModel.expenses.collect { expenses ->
+                        val recentExpenses = expenses
+                            .sortedByDescending { it.createdAt }
+                            .take(5)
+
+                        recentExpenseAdapter.updateExpenses(recentExpenses)
+
+                        if (recentExpenses.isEmpty()) {
+                            binding.recyclerRecentExpenses.visibility = View.GONE
+                            binding.tvRecentEmpty.visibility = View.VISIBLE
+                        } else {
+                            binding.recyclerRecentExpenses.visibility = View.VISIBLE
+                            binding.tvRecentEmpty.visibility = View.GONE
+                        }
+                    }
+                }
+
+                launch {
+                    expenseViewModel.message.collect { message ->
+                        if (message.isNotBlank()) {
+                            Toast.makeText(
+                                this@HomeActivity,
+                                message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            expenseViewModel.clearMessage()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -161,64 +238,13 @@ class HomeActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun loadSummary() {
-        lifecycleScope.launch {
-            val result = expenseRepository.getExpenseSummary()
-
-            result.onSuccess { summary ->
-                val income = summary.first
-                val expense = summary.second
-                val balance = summary.third
-
-                binding.tvIncome.text = CurrencyUtils.formatAmount(income)
-                binding.tvExpense.text = CurrencyUtils.formatAmount(expense)
-                binding.tvBalance.text = CurrencyUtils.formatAmount(balance)
-
-                loadRecentTransactions()
-
-            }
-
-            result.onFailure {
-                Toast.makeText(
-                    this@HomeActivity,
-                    it.message ?: getString(R.string.failed_to_load_summary),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun loadRecentTransactions() {
-
-        lifecycleScope.launch {
-
-            val result = expenseRepository.getUserExpenses()
-
-            result.onSuccess { expenses ->
-
-                val recentExpenses = expenses
-                    .sortedByDescending { it.createdAt }
-                    .take(5)
-
-                recentExpenseAdapter.updateExpenses(recentExpenses)
-            }
-
-            result.onFailure {
-
-                Toast.makeText(
-                    this@HomeActivity,
-                    it.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
     private fun logoutUser() {
         firebaseAuth.signOut()
 
         val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        intent.flags =
+            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
         startActivity(intent)
     }
 }
