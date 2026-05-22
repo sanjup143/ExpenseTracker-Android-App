@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.sanju.expensetracker.R
 import com.sanju.expensetracker.databinding.ActivityHomeBinding
+import com.sanju.expensetracker.ui.adapter.ExpenseAdapter
 import com.sanju.expensetracker.ui.auth.LoginActivity
 import com.sanju.expensetracker.ui.viewmodel.ExpenseViewModel
 import com.sanju.expensetracker.utils.CurrencyUtils
@@ -96,66 +97,47 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun refreshDashboard() {
-        expenseViewModel.loadSummary()
-        expenseViewModel.loadExpenses()
+        expenseViewModel.loadDashboardData()
     }
 
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                expenseViewModel.uiState.collect { uiState ->
 
-                launch {
-                    expenseViewModel.summary.collect { summary ->
-                        val income = summary.first
-                        val expense = summary.second
-                        val balance = summary.third
+                    binding.tvIncome.text =
+                        CurrencyUtils.formatAmount(uiState.income)
 
-                        binding.tvIncome.text =
-                            CurrencyUtils.formatAmount(income)
+                    binding.tvExpense.text =
+                        CurrencyUtils.formatAmount(uiState.expense)
 
-                        binding.tvExpense.text =
-                            CurrencyUtils.formatAmount(expense)
+                    binding.tvBalance.text =
+                        CurrencyUtils.formatAmount(uiState.balance)
 
-                        binding.tvBalance.text =
-                            CurrencyUtils.formatAmount(balance)
+                    binding.swipeRefresh.isRefreshing = uiState.isLoading
+
+                    val recentExpenses = uiState.expenses
+                        .sortedByDescending { it.createdAt }
+                        .take(5)
+
+                    recentExpenseAdapter.updateExpenses(recentExpenses)
+
+                    if (recentExpenses.isEmpty()) {
+                        binding.recyclerRecentExpenses.visibility = View.GONE
+                        binding.tvRecentEmpty.visibility = View.VISIBLE
+                    } else {
+                        binding.recyclerRecentExpenses.visibility = View.VISIBLE
+                        binding.tvRecentEmpty.visibility = View.GONE
                     }
-                }
 
-                launch {
-                    expenseViewModel.isLoading.collect { isLoading ->
-                        binding.swipeRefresh.isRefreshing = isLoading
-                    }
-                }
+                    if (uiState.message.isNotBlank()) {
+                        Toast.makeText(
+                            this@HomeActivity,
+                            uiState.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                launch {
-                    expenseViewModel.expenses.collect { expenses ->
-                        val recentExpenses = expenses
-                            .sortedByDescending { it.createdAt }
-                            .take(5)
-
-                        recentExpenseAdapter.updateExpenses(recentExpenses)
-
-                        if (recentExpenses.isEmpty()) {
-                            binding.recyclerRecentExpenses.visibility = View.GONE
-                            binding.tvRecentEmpty.visibility = View.VISIBLE
-                        } else {
-                            binding.recyclerRecentExpenses.visibility = View.VISIBLE
-                            binding.tvRecentEmpty.visibility = View.GONE
-                        }
-                    }
-                }
-
-                launch {
-                    expenseViewModel.message.collect { message ->
-                        if (message.isNotBlank()) {
-                            Toast.makeText(
-                                this@HomeActivity,
-                                message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            expenseViewModel.clearMessage()
-                        }
+                        expenseViewModel.clearMessage()
                     }
                 }
             }

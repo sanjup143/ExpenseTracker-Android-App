@@ -12,6 +12,7 @@ import com.sanju.expensetracker.R
 import com.sanju.expensetracker.data.model.Expense
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.databinding.ActivityExpenseListBinding
+import com.sanju.expensetracker.ui.adapter.ExpenseAdapter
 import kotlinx.coroutines.launch
 
 class ExpenseListActivity : AppCompatActivity() {

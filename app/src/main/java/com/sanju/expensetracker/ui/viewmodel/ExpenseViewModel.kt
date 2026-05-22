@@ -3,8 +3,8 @@ package com.sanju.expensetracker.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.sanju.expensetracker.data.model.Expense
 import com.sanju.expensetracker.data.repository.ExpenseRepository
+import com.sanju.expensetracker.ui.state.ExpenseUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,70 +18,72 @@ class ExpenseViewModel(
         application.applicationContext
     )
 
-    private val _expenses = MutableStateFlow<List<Expense>>(emptyList())
-    val expenses: StateFlow<List<Expense>> = _expenses.asStateFlow()
+    private val _uiState = MutableStateFlow(ExpenseUiState())
+    val uiState: StateFlow<ExpenseUiState> = _uiState.asStateFlow()
 
-    private val _summary = MutableStateFlow(Triple(0.0, 0.0, 0.0))
-    val summary: StateFlow<Triple<Double, Double, Double>> = _summary.asStateFlow()
-
-    private val _message = MutableStateFlow("")
-    val message: StateFlow<String> = _message.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    fun loadExpenses() {
+    fun loadDashboardData() {
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.value = _uiState.value.copy(
+                isLoading = true
+            )
 
-            val result = expenseRepository.getUserExpenses()
+            val expensesResult = expenseRepository.getUserExpenses()
+            val summaryResult = expenseRepository.getExpenseSummary()
 
-            result.onSuccess {
-                _expenses.value = it
-            }
+            if (expensesResult.isSuccess && summaryResult.isSuccess) {
+                val expenses = expensesResult.getOrNull().orEmpty()
+                val summary = summaryResult.getOrNull() ?: Triple(0.0, 0.0, 0.0)
 
-            result.onFailure {
-                _message.value = it.message ?: "Failed to load expenses"
-            }
+                _uiState.value = _uiState.value.copy(
+                    expenses = expenses,
+                    income = summary.first,
+                    expense = summary.second,
+                    balance = summary.third,
+                    isLoading = false,
+                    message = ""
+                )
+            } else {
+                val errorMessage =
+                    expensesResult.exceptionOrNull()?.message
+                        ?: summaryResult.exceptionOrNull()?.message
+                        ?: "Failed to load dashboard data"
 
-            _isLoading.value = false
-        }
-    }
-
-    fun loadSummary() {
-        viewModelScope.launch {
-            val result = expenseRepository.getExpenseSummary()
-
-            result.onSuccess {
-                _summary.value = it
-            }
-
-            result.onFailure {
-                _message.value = it.message ?: "Failed to load summary"
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    message = errorMessage
+                )
             }
         }
     }
 
     fun deleteExpense(expenseId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.value = _uiState.value.copy(
+                isLoading = true
+            )
 
             val result = expenseRepository.deleteExpense(expenseId)
 
-            result.onSuccess {
-                _message.value = it
-                loadExpenses()
-                loadSummary()
+            result.onSuccess { message ->
+                _uiState.value = _uiState.value.copy(
+                    message = message
+                )
+
+                loadDashboardData()
             }
 
             result.onFailure {
-                _message.value = it.message ?: "Failed to delete expense"
-                _isLoading.value = false
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    message = it.message ?: "Failed to delete expense"
+                )
             }
         }
     }
 
     fun clearMessage() {
-        _message.value = ""
+        _uiState.value = _uiState.value.copy(
+            message = ""
+        )
     }
 }
