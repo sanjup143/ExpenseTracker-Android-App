@@ -1,22 +1,20 @@
 package com.sanju.expensetracker.ui.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.ui.state.ExpenseUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ExpenseViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val expenseRepository = ExpenseRepository(
-        application.applicationContext
-    )
+@HiltViewModel
+class ExpenseViewModel @Inject constructor(
+    private val expenseRepository: ExpenseRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExpenseUiState())
     val uiState: StateFlow<ExpenseUiState> = _uiState.asStateFlow()

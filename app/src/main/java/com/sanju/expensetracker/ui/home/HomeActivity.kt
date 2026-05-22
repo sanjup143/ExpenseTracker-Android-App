@@ -24,7 +24,8 @@ import com.sanju.expensetracker.ui.viewmodel.ExpenseViewModel
 import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
 import kotlinx.coroutines.launch
-
+import dagger.hilt.android.AndroidEntryPoint
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
