@@ -81,4 +81,4 @@ Sanju Parmar
 
 ## Project Status
 
-Completed
+In Progress - Advanced Android portfolio project
