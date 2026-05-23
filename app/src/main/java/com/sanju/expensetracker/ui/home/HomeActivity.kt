@@ -25,6 +25,7 @@ import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
 import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
+import com.sanju.expensetracker.ui.settings.SettingsActivity
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
@@ -176,6 +177,10 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnEnableReminder.setOnClickListener {
             handleReminderPermission()
+        }
+
+        binding.btnSettings.setOnClickListener {
+            openScreen(SettingsActivity::class.java)
         }
 
         binding.btnLogout.setOnClickListener {

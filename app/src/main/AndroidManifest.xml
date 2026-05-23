@@ -46,6 +46,8 @@
 
         <activity android:name=".ui.home.PdfReportActivity" />
 
+        <activity android:name=".ui.settings.SettingsActivity" />
+
         <receiver
             android:name=".utils.ReminderReceiver"
             android:exported="false" />

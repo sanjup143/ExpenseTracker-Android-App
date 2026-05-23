@@ -24,6 +24,9 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Swipe To Refresh
 - Offline Data Access
 - Hilt Dependency Injection
+- DataStore Preferences
+- Settings Screen
+- Persistent Dark Mode
 
 ## Tech Stack
 
@@ -38,6 +41,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - StateFlow
 - MVVM Architecture
 - Hilt
+- DataStore
 
 ## Screenshots
 

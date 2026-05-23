@@ -1,6 +1,7 @@
 package com.sanju.expensetracker.di
 
 import android.content.Context
+import com.sanju.expensetracker.data.preferences.SettingsPreferences
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import dagger.Module
 import dagger.Provides
@@ -19,5 +20,13 @@ object RepositoryModule {
         @ApplicationContext context: Context
     ): ExpenseRepository {
         return ExpenseRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsPreferences(
+        @ApplicationContext context: Context
+    ): SettingsPreferences {
+        return SettingsPreferences(context)
     }
 }

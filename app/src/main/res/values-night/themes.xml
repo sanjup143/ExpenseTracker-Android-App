@@ -15,4 +15,8 @@
 
     </style>
 
+    <style
+        name="Theme.ExpenseTracker"
+        parent="Base.Theme.ExpenseTracker" />
+
 </resources>
