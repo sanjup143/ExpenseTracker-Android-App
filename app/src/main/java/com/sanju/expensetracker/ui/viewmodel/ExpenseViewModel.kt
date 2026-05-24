@@ -2,6 +2,7 @@ package com.sanju.expensetracker.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sanju.expensetracker.data.model.DashboardStats
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.ui.state.ExpenseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,16 +28,23 @@ class ExpenseViewModel @Inject constructor(
 
             val expensesResult = expenseRepository.getUserExpenses()
             val summaryResult = expenseRepository.getExpenseSummary()
+            val statsResult = expenseRepository.getDashboardStats()
 
-            if (expensesResult.isSuccess && summaryResult.isSuccess) {
+            if (
+                expensesResult.isSuccess &&
+                summaryResult.isSuccess &&
+                statsResult.isSuccess
+            ) {
                 val expenses = expensesResult.getOrNull().orEmpty()
                 val summary = summaryResult.getOrNull() ?: Triple(0.0, 0.0, 0.0)
+                val dashboardStats = statsResult.getOrNull() ?: DashboardStats()
 
                 _uiState.value = _uiState.value.copy(
                     expenses = expenses,
                     income = summary.first,
                     expense = summary.second,
                     balance = summary.third,
+                    dashboardStats = dashboardStats,
                     isLoading = false,
                     message = ""
                 )
@@ -44,6 +52,7 @@ class ExpenseViewModel @Inject constructor(
                 val errorMessage =
                     expensesResult.exceptionOrNull()?.message
                         ?: summaryResult.exceptionOrNull()?.message
+                        ?: statsResult.exceptionOrNull()?.message
                         ?: "Failed to load dashboard data"
 
                 _uiState.value = _uiState.value.copy(

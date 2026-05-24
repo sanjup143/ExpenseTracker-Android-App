@@ -1,5 +1,6 @@
 package com.sanju.expensetracker.ui.state
 
+import com.sanju.expensetracker.data.model.DashboardStats
 import com.sanju.expensetracker.data.model.Expense
 
 data class ExpenseUiState(
@@ -7,6 +8,7 @@ data class ExpenseUiState(
     val income: Double = 0.0,
     val expense: Double = 0.0,
     val balance: Double = 0.0,
+    val dashboardStats: DashboardStats = DashboardStats(),
     val isLoading: Boolean = false,
     val message: String = ""
 )

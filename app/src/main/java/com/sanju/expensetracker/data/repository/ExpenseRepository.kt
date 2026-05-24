@@ -9,6 +9,7 @@ import com.sanju.expensetracker.data.model.Budget
 import com.sanju.expensetracker.data.model.Expense
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
+import com.sanju.expensetracker.data.model.DashboardStats
 
 class ExpenseRepository(
     context: Context
@@ -248,6 +249,49 @@ class ExpenseRepository(
         val balance = totalIncome - totalExpense
 
         return Triple(totalIncome, totalExpense, balance)
+    }
+
+    suspend fun getDashboardStats(): Result<DashboardStats> {
+
+        val expensesResult = getUserExpenses()
+
+        return if (expensesResult.isSuccess) {
+            val expenses = expensesResult.getOrNull().orEmpty()
+
+            val incomeList = expenses.filter { it.type == "Income" }
+            val expenseList = expenses.filter { it.type == "Expense" }
+
+            val calendar = Calendar.getInstance()
+            val currentMonth = calendar.get(Calendar.MONTH) + 1
+            val currentYear = calendar.get(Calendar.YEAR)
+
+            val stats = DashboardStats(
+                totalTransactions = expenses.size,
+                highestIncome = incomeList.maxOfOrNull { it.amount } ?: 0.0,
+                highestExpense = expenseList.maxOfOrNull { it.amount } ?: 0.0,
+                averageIncome = if (incomeList.isNotEmpty()) {
+                    incomeList.map { it.amount }.average()
+                } else {
+                    0.0
+                },
+                averageExpense = if (expenseList.isNotEmpty()) {
+                    expenseList.map { it.amount }.average()
+                } else {
+                    0.0
+                },
+                thisMonthTransactions = expenses.count {
+                    it.month == currentMonth && it.year == currentYear
+                }
+            )
+
+            Result.success(stats)
+
+        } else {
+            Result.failure(
+                expensesResult.exceptionOrNull()
+                    ?: Exception("Failed to load dashboard stats")
+            )
+        }
     }
 
     suspend fun saveMonthlyBudget(

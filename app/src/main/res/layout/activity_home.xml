@@ -135,6 +135,62 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="Dashboard Stats"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTotalTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Total Transactions: 0"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvThisMonthTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="This Month: 0"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvHighestIncome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Highest Income: ₹0.00"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvHighestExpense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Highest Expense: ₹0.00"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvAverageIncome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Average Income: ₹0.00"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvAverageExpense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Average Expense: ₹0.00"
+                android:textSize="16sp" />
+
             <Button
                 android:id="@+id/btnAddExpense"
                 android:layout_width="match_parent"

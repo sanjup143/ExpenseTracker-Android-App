@@ -135,6 +135,26 @@ class HomeActivity : AppCompatActivity() {
                             balance = uiState.balance
                         )
 
+                        val stats = uiState.dashboardStats
+
+                        binding.tvTotalTransactions.text =
+                            "Total Transactions: ${stats.totalTransactions}"
+
+                        binding.tvThisMonthTransactions.text =
+                            "This Month: ${stats.thisMonthTransactions}"
+
+                        binding.tvHighestIncome.text =
+                            "Highest Income: ${CurrencyUtils.formatAmount(stats.highestIncome, selectedCurrency)}"
+
+                        binding.tvHighestExpense.text =
+                            "Highest Expense: ${CurrencyUtils.formatAmount(stats.highestExpense, selectedCurrency)}"
+
+                        binding.tvAverageIncome.text =
+                            "Average Income: ${CurrencyUtils.formatAmount(stats.averageIncome, selectedCurrency)}"
+
+                        binding.tvAverageExpense.text =
+                            "Average Expense: ${CurrencyUtils.formatAmount(stats.averageExpense, selectedCurrency)}"
+
                         binding.swipeRefresh.isRefreshing = uiState.isLoading
 
                         val recentExpenses = uiState.expenses
