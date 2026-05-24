@@ -60,7 +60,18 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerExpenses"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="No expenses found"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
 </LinearLayout>

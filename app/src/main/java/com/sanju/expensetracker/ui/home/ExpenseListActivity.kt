@@ -129,6 +129,14 @@ class ExpenseListActivity : AppCompatActivity() {
         }
 
         expenseAdapter.updateExpenses(filteredExpenses)
+
+        if (filteredExpenses.isEmpty()) {
+            binding.recyclerExpenses.visibility = android.view.View.GONE
+            binding.tvEmpty.visibility = android.view.View.VISIBLE
+        } else {
+            binding.recyclerExpenses.visibility = android.view.View.VISIBLE
+            binding.tvEmpty.visibility = android.view.View.GONE
+        }
     }
 
     private fun openEditExpenseScreen(expense: Expense) {
