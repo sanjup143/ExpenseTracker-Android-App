@@ -1,6 +1,7 @@
 package com.sanju.expensetracker.ui.settings
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -18,28 +19,83 @@ class SettingsActivity : AppCompatActivity() {
 
     private val settingsViewModel: SettingsViewModel by viewModels()
 
+    private val currencies = listOf(
+        "₹ INR",
+        "$ USD",
+        "€ EUR",
+        "£ GBP"
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupCurrencySpinner()
         setupListeners()
         observeViewModel()
+    }
+
+    private fun setupCurrencySpinner() {
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            currencies
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        binding.spinnerCurrency.adapter = adapter
     }
 
     private fun setupListeners() {
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.saveDarkModeEnabled(isChecked)
         }
+
+        binding.spinnerCurrency.setOnItemSelectedListener(
+            object : android.widget.AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: android.widget.AdapterView<*>?,
+                    view: android.view.View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedCurrency = currencies[position].substringBefore(" ")
+                    settingsViewModel.saveSelectedCurrency(selectedCurrency)
+                }
+
+                override fun onNothingSelected(
+                    parent: android.widget.AdapterView<*>?
+                ) {
+                    // No action needed
+                }
+            }
+        )
     }
 
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                settingsViewModel.isDarkModeEnabled.collect { isEnabled ->
-                    if (binding.switchDarkMode.isChecked != isEnabled) {
-                        binding.switchDarkMode.isChecked = isEnabled
+                settingsViewModel.uiState.collect { uiState ->
+
+                    if (binding.switchDarkMode.isChecked != uiState.isDarkModeEnabled) {
+                        binding.switchDarkMode.isChecked = uiState.isDarkModeEnabled
+                    }
+
+                    val selectedIndex = currencies.indexOfFirst {
+                        it.startsWith(uiState.selectedCurrency)
+                    }
+
+                    if (
+                        selectedIndex >= 0 &&
+                        binding.spinnerCurrency.selectedItemPosition != selectedIndex
+                    ) {
+                        binding.spinnerCurrency.setSelection(selectedIndex)
                     }
                 }
             }

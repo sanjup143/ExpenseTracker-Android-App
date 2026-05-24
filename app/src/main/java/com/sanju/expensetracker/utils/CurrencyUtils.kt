@@ -5,12 +5,24 @@ import java.util.Locale
 
 object CurrencyUtils {
 
-    fun formatAmount(amount: Double): String {
+    fun formatAmount(
+        amount: Double,
+        currencySymbol: String = "₹"
+    ): String {
 
-        val locale = Locale.Builder()
-            .setLanguage("en")
-            .setRegion("IN")
-            .build()
+        val locale = when (currencySymbol) {
+
+            "$" -> Locale.US
+
+            "€" -> Locale.GERMANY
+
+            "£" -> Locale.UK
+
+            else -> Locale.Builder()
+                .setLanguage("en")
+                .setRegion("IN")
+                .build()
+        }
 
         val formatter =
             NumberFormat.getCurrencyInstance(locale)

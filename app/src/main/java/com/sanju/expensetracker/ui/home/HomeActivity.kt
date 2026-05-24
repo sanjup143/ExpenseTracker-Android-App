@@ -20,21 +20,27 @@ import com.sanju.expensetracker.R
 import com.sanju.expensetracker.databinding.ActivityHomeBinding
 import com.sanju.expensetracker.ui.adapter.ExpenseAdapter
 import com.sanju.expensetracker.ui.auth.LoginActivity
+import com.sanju.expensetracker.ui.settings.SettingsActivity
 import com.sanju.expensetracker.ui.viewmodel.ExpenseViewModel
+import com.sanju.expensetracker.ui.viewmodel.SettingsViewModel
 import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
-import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
-import com.sanju.expensetracker.ui.settings.SettingsActivity
+import kotlinx.coroutines.launch
+
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
 
     private val expenseViewModel: ExpenseViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     private val firebaseAuth = FirebaseAuth.getInstance()
 
     private lateinit var recentExpenseAdapter: ExpenseAdapter
+
+    private var selectedCurrency: String = "₹"
 
     private val notificationPermissionLauncher =
         registerForActivityResult(
@@ -61,7 +67,7 @@ class HomeActivity : AppCompatActivity() {
         setupRecentTransactions()
         setupClickListeners()
         setupSwipeRefresh()
-        observeViewModel()
+        observeViewModels()
     }
 
     override fun onResume() {
@@ -102,48 +108,77 @@ class HomeActivity : AppCompatActivity() {
         expenseViewModel.loadDashboardData()
     }
 
-    private fun observeViewModel() {
+    private fun observeViewModels() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                expenseViewModel.uiState.collect { uiState ->
 
-                    binding.tvIncome.text =
-                        CurrencyUtils.formatAmount(uiState.income)
+                launch {
+                    settingsViewModel.uiState.collect { settingsState ->
+                        selectedCurrency = settingsState.selectedCurrency
 
-                    binding.tvExpense.text =
-                        CurrencyUtils.formatAmount(uiState.expense)
+                        val expenseState = expenseViewModel.uiState.value
 
-                    binding.tvBalance.text =
-                        CurrencyUtils.formatAmount(uiState.balance)
-
-                    binding.swipeRefresh.isRefreshing = uiState.isLoading
-
-                    val recentExpenses = uiState.expenses
-                        .sortedByDescending { it.createdAt }
-                        .take(5)
-
-                    recentExpenseAdapter.updateExpenses(recentExpenses)
-
-                    if (recentExpenses.isEmpty()) {
-                        binding.recyclerRecentExpenses.visibility = View.GONE
-                        binding.tvRecentEmpty.visibility = View.VISIBLE
-                    } else {
-                        binding.recyclerRecentExpenses.visibility = View.VISIBLE
-                        binding.tvRecentEmpty.visibility = View.GONE
+                        updateSummary(
+                            income = expenseState.income,
+                            expense = expenseState.expense,
+                            balance = expenseState.balance
+                        )
                     }
+                }
 
-                    if (uiState.message.isNotBlank()) {
-                        Toast.makeText(
-                            this@HomeActivity,
-                            uiState.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                launch {
+                    expenseViewModel.uiState.collect { uiState ->
 
-                        expenseViewModel.clearMessage()
+                        updateSummary(
+                            income = uiState.income,
+                            expense = uiState.expense,
+                            balance = uiState.balance
+                        )
+
+                        binding.swipeRefresh.isRefreshing = uiState.isLoading
+
+                        val recentExpenses = uiState.expenses
+                            .sortedByDescending { it.createdAt }
+                            .take(5)
+
+                        recentExpenseAdapter.updateExpenses(recentExpenses)
+
+                        if (recentExpenses.isEmpty()) {
+                            binding.recyclerRecentExpenses.visibility = View.GONE
+                            binding.tvRecentEmpty.visibility = View.VISIBLE
+                        } else {
+                            binding.recyclerRecentExpenses.visibility = View.VISIBLE
+                            binding.tvRecentEmpty.visibility = View.GONE
+                        }
+
+                        if (uiState.message.isNotBlank()) {
+                            Toast.makeText(
+                                this@HomeActivity,
+                                uiState.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            expenseViewModel.clearMessage()
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun updateSummary(
+        income: Double,
+        expense: Double,
+        balance: Double
+    ) {
+        binding.tvIncome.text =
+            CurrencyUtils.formatAmount(income, selectedCurrency)
+
+        binding.tvExpense.text =
+            CurrencyUtils.formatAmount(expense, selectedCurrency)
+
+        binding.tvBalance.text =
+            CurrencyUtils.formatAmount(balance, selectedCurrency)
     }
 
     private fun setupClickListeners() {
