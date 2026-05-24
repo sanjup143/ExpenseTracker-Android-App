@@ -27,6 +27,8 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - DataStore Preferences
 - Settings Screen
 - Persistent Dark Mode
+- Persistent Multi-Currency Settings
+- Currency Selection (INR, USD, EUR, GBP)
 
 ## Tech Stack
 
@@ -42,6 +44,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - MVVM Architecture
 - Hilt
 - DataStore
+- DataStore Preferences
 
 ## Screenshots
 
