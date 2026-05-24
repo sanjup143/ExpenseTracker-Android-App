@@ -29,6 +29,11 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Persistent Dark Mode
 - Persistent Multi-Currency Settings
 - Currency Selection (INR, USD, EUR, GBP)
+- Advanced Expense Filtering
+- Category Filter
+- Sort by Latest/Oldest
+- Sort by Amount
+- Empty State UI
 
 ## Tech Stack
 
