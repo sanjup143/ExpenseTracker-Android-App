@@ -4,6 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +27,15 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private var allExpenses: List<Expense> = emptyList()
     private var selectedFilter: String = ""
+    private var selectedCategory: String = "All Categories"
+    private var selectedSort: String = "Latest First"
+
+    private val sortOptions = listOf(
+        "Latest First",
+        "Oldest First",
+        "Amount High to Low",
+        "Amount Low to High"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +50,7 @@ class ExpenseListActivity : AppCompatActivity() {
         setupRecyclerView()
         setupSearch()
         setupFilter()
+        setupSortSpinner()
         loadExpenses()
     }
 
@@ -90,8 +103,89 @@ class ExpenseListActivity : AppCompatActivity() {
                 else -> getString(R.string.all)
             }
 
+            setupCategorySpinner()
             applyFilters()
         }
+    }
+
+    private fun setupCategorySpinner() {
+        val categories = mutableListOf("All Categories")
+
+        categories.addAll(
+            allExpenses
+                .filter {
+                    selectedFilter == getString(R.string.all) ||
+                            it.type.equals(selectedFilter, ignoreCase = true)
+                }
+                .map { it.category }
+                .distinct()
+                .sorted()
+        )
+
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            categories
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        binding.spinnerCategory.adapter = adapter
+
+        if (!categories.contains(selectedCategory)) {
+            selectedCategory = "All Categories"
+        }
+
+        val selectedIndex = categories.indexOf(selectedCategory)
+        if (selectedIndex >= 0) {
+            binding.spinnerCategory.setSelection(selectedIndex)
+        }
+
+        binding.spinnerCategory.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    selectedCategory = categories[position]
+                    applyFilters()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+            }
+    }
+
+    private fun setupSortSpinner() {
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            sortOptions
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        binding.spinnerSort.adapter = adapter
+
+        binding.spinnerSort.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    selectedSort = sortOptions[position]
+                    applyFilters()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+            }
     }
 
     private fun loadExpenses() {
@@ -100,6 +194,7 @@ class ExpenseListActivity : AppCompatActivity() {
 
             result.onSuccess { expenses ->
                 allExpenses = expenses
+                setupCategorySpinner()
                 applyFilters()
             }
 
@@ -116,26 +211,39 @@ class ExpenseListActivity : AppCompatActivity() {
     private fun applyFilters() {
         val searchText = binding.etSearch.text.toString().trim().lowercase()
 
-        val filteredExpenses = allExpenses.filter { expense ->
-            val matchesSearch =
-                expense.title.lowercase().contains(searchText) ||
-                        expense.category.lowercase().contains(searchText)
+        val filteredExpenses = allExpenses
+            .filter { expense ->
+                val matchesSearch =
+                    expense.title.lowercase().contains(searchText) ||
+                            expense.category.lowercase().contains(searchText)
 
-            val matchesType =
-                selectedFilter == getString(R.string.all) ||
-                        expense.type.equals(selectedFilter, ignoreCase = true)
+                val matchesType =
+                    selectedFilter == getString(R.string.all) ||
+                            expense.type.equals(selectedFilter, ignoreCase = true)
 
-            matchesSearch && matchesType
-        }
+                val matchesCategory =
+                    selectedCategory == "All Categories" ||
+                            expense.category.equals(selectedCategory, ignoreCase = true)
+
+                matchesSearch && matchesType && matchesCategory
+            }
+            .let { expenses ->
+                when (selectedSort) {
+                    "Oldest First" -> expenses.sortedBy { it.createdAt }
+                    "Amount High to Low" -> expenses.sortedByDescending { it.amount }
+                    "Amount Low to High" -> expenses.sortedBy { it.amount }
+                    else -> expenses.sortedByDescending { it.createdAt }
+                }
+            }
 
         expenseAdapter.updateExpenses(filteredExpenses)
 
         if (filteredExpenses.isEmpty()) {
-            binding.recyclerExpenses.visibility = android.view.View.GONE
-            binding.tvEmpty.visibility = android.view.View.VISIBLE
+            binding.recyclerExpenses.visibility = View.GONE
+            binding.tvEmpty.visibility = View.VISIBLE
         } else {
-            binding.recyclerExpenses.visibility = android.view.View.VISIBLE
-            binding.tvEmpty.visibility = android.view.View.GONE
+            binding.recyclerExpenses.visibility = View.VISIBLE
+            binding.tvEmpty.visibility = View.GONE
         }
     }
 
