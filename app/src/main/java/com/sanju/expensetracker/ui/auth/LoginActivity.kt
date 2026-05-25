@@ -1,12 +1,16 @@
 package com.sanju.expensetracker.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.sanju.expensetracker.R
 import com.sanju.expensetracker.databinding.ActivityLoginBinding
+import com.sanju.expensetracker.ui.home.HomeActivity
+import com.sanju.expensetracker.utils.BiometricHelper
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -14,6 +18,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
 
     private val authViewModel: AuthViewModel by viewModels()
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
 
         setupClickListeners()
         observeAuthState()
+        setupBiometricLogin()
     }
 
     private fun setupClickListeners() {
@@ -32,10 +38,33 @@ class LoginActivity : AppCompatActivity() {
 
         binding.tvRegister.setOnClickListener {
             startActivity(
-                android.content.Intent(
+                Intent(
                     this,
                     RegisterActivity::class.java
                 )
+            )
+        }
+    }
+
+    private fun setupBiometricLogin() {
+        val currentUser = firebaseAuth.currentUser
+
+        if (
+            currentUser != null &&
+            BiometricHelper.isBiometricAvailable(this)
+        ) {
+            BiometricHelper.showBiometricPrompt(
+                activity = this,
+                onSuccess = {
+                    openHomeScreen()
+                },
+                onError = { message ->
+                    Toast.makeText(
+                        this,
+                        message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             )
         }
     }
@@ -82,13 +111,7 @@ class LoginActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        startActivity(
-                            android.content.Intent(
-                                this@LoginActivity,
-                                com.sanju.expensetracker.ui.home.HomeActivity::class.java
-                            )
-                        )
-                        finish()
+                        openHomeScreen()
                     }
 
                     is AuthState.Error -> {
@@ -104,5 +127,16 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun openHomeScreen() {
+        startActivity(
+            Intent(
+                this,
+                HomeActivity::class.java
+            )
+        )
+
+        finish()
     }
 }
