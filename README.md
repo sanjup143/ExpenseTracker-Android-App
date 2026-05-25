@@ -40,6 +40,8 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Average Income & Expense Analysis
 - Monthly Transaction Insights
 - Transaction Details Screen
+- Biometric Fingerprint Login
+- Splash Screen Session Check
 
 ## Tech Stack
 
