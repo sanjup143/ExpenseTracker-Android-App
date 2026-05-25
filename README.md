@@ -39,6 +39,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - Highest Income & Expense Tracking
 - Average Income & Expense Analysis
 - Monthly Transaction Insights
+- Transaction Details Screen
 
 ## Tech Stack
 
