@@ -61,6 +61,9 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         expenseAdapter = ExpenseAdapter(
+            onItemClick = { expense ->
+                openExpenseDetailsScreen(expense)
+            },
             onEditClick = { expense ->
                 openEditExpenseScreen(expense)
             },
@@ -245,6 +248,19 @@ class ExpenseListActivity : AppCompatActivity() {
             binding.recyclerExpenses.visibility = View.VISIBLE
             binding.tvEmpty.visibility = View.GONE
         }
+    }
+
+    private fun openExpenseDetailsScreen(expense: Expense) {
+        val intent = Intent(this, ExpenseDetailsActivity::class.java)
+
+        intent.putExtra("expenseId", expense.id)
+        intent.putExtra("title", expense.title)
+        intent.putExtra("amount", expense.amount)
+        intent.putExtra("category", expense.category)
+        intent.putExtra("type", expense.type)
+        intent.putExtra("createdAt", expense.createdAt)
+
+        startActivity(intent)
     }
 
     private fun openEditExpenseScreen(expense: Expense) {

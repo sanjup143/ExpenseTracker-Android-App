@@ -10,6 +10,7 @@ import com.sanju.expensetracker.utils.CategoryIconUtils
 import com.sanju.expensetracker.utils.CurrencyUtils
 
 class ExpenseAdapter(
+    private val onItemClick: (Expense) -> Unit = {},
     private val onEditClick: (Expense) -> Unit,
     private val onDeleteClick: (Expense) -> Unit
 ) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
@@ -32,6 +33,10 @@ class ExpenseAdapter(
                 expense.category,
                 expense.type
             )
+
+            binding.root.setOnClickListener {
+                onItemClick(expense)
+            }
 
             binding.btnEdit.setOnClickListener {
                 onEditClick(expense)

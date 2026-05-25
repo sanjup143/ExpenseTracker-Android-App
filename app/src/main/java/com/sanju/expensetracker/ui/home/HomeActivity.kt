@@ -84,6 +84,9 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupRecentTransactions() {
         recentExpenseAdapter = ExpenseAdapter(
+            onItemClick = { expense ->
+                openExpenseDetailsScreen(expense)
+            },
             onEditClick = {
                 openScreen(ExpenseListActivity::class.java)
             },
@@ -199,6 +202,19 @@ class HomeActivity : AppCompatActivity() {
 
         binding.tvBalance.text =
             CurrencyUtils.formatAmount(balance, selectedCurrency)
+    }
+
+    private fun openExpenseDetailsScreen(expense: com.sanju.expensetracker.data.model.Expense) {
+        val intent = Intent(this, ExpenseDetailsActivity::class.java)
+
+        intent.putExtra("expenseId", expense.id)
+        intent.putExtra("title", expense.title)
+        intent.putExtra("amount", expense.amount)
+        intent.putExtra("category", expense.category)
+        intent.putExtra("type", expense.type)
+        intent.putExtra("createdAt", expense.createdAt)
+
+        startActivity(intent)
     }
 
     private fun setupClickListeners() {

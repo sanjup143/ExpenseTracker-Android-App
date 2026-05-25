@@ -48,6 +48,8 @@
 
         <activity android:name=".ui.settings.SettingsActivity" />
 
+        <activity android:name=".ui.home.ExpenseDetailsActivity" />
+
         <receiver
             android:name=".utils.ReminderReceiver"
             android:exported="false" />
