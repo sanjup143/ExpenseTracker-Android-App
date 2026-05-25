@@ -14,6 +14,7 @@ A modern Android Expense Tracker application built using Kotlin and Firebase.
 - PDF Report Export
 - Analytics Charts
 - Category Analytics
+- Expense Category Icons
 - Dark Mode UI
 - Firebase Firestore Database
 - Search and filter expenses by title, category, income, and expense

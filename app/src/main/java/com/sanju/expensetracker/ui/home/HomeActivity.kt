@@ -144,16 +144,16 @@ class HomeActivity : AppCompatActivity() {
                             "This Month: ${stats.thisMonthTransactions}"
 
                         binding.tvHighestIncome.text =
-                            "Highest Income: ${CurrencyUtils.formatAmount(stats.highestIncome, selectedCurrency)}"
+                            CurrencyUtils.formatAmount(stats.highestIncome, selectedCurrency)
 
                         binding.tvHighestExpense.text =
-                            "Highest Expense: ${CurrencyUtils.formatAmount(stats.highestExpense, selectedCurrency)}"
+                            CurrencyUtils.formatAmount(stats.highestExpense, selectedCurrency)
 
                         binding.tvAverageIncome.text =
-                            "Average Income: ${CurrencyUtils.formatAmount(stats.averageIncome, selectedCurrency)}"
+                            CurrencyUtils.formatAmount(stats.averageIncome, selectedCurrency)
 
                         binding.tvAverageExpense.text =
-                            "Average Expense: ${CurrencyUtils.formatAmount(stats.averageExpense, selectedCurrency)}"
+                            CurrencyUtils.formatAmount(stats.averageExpense, selectedCurrency)
 
                         binding.swipeRefresh.isRefreshing = uiState.isLoading
 

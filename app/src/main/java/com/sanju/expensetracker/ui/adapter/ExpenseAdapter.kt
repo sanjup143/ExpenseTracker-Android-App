@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sanju.expensetracker.R
 import com.sanju.expensetracker.data.model.Expense
 import com.sanju.expensetracker.databinding.ItemExpenseBinding
+import com.sanju.expensetracker.utils.CategoryIconUtils
 import com.sanju.expensetracker.utils.CurrencyUtils
 
 class ExpenseAdapter(
@@ -20,6 +21,9 @@ class ExpenseAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(expense: Expense) {
+            binding.tvCategoryIcon.text =
+                CategoryIconUtils.getCategoryIcon(expense.category)
+
             binding.tvTitle.text = expense.title
             binding.tvAmount.text = CurrencyUtils.formatAmount(expense.amount)
 
@@ -39,20 +43,29 @@ class ExpenseAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ExpenseViewHolder {
         val binding = ItemExpenseBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
+
         return ExpenseViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ExpenseViewHolder,
+        position: Int
+    ) {
         holder.bind(expenses[position])
     }
 
-    override fun getItemCount(): Int = expenses.size
+    override fun getItemCount(): Int {
+        return expenses.size
+    }
 
     fun updateExpenses(newExpenses: List<Expense>) {
         expenses.clear()
