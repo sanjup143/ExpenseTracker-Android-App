@@ -172,11 +172,30 @@ This project follows:
 ```text
 app/
 ├── data/
+│   ├── local/
+│   ├── model/
+│   ├── preferences/
+│   └── repository/
+│
 ├── di/
-├── repository/
+│
 ├── ui/
+│   ├── adapter/
+│   ├── auth/
+│   ├── home/
+│   └── settings/
+│
+├── state/
 ├── utils/
-└── viewmodel/
+├── viewmodel/
+│
+├── res/
+│   ├── layout/
+│   ├── drawable/
+│   ├── values/
+│   └── xml/
+│
+└── Gradle Scripts/
 ```
 
 ---
@@ -186,7 +205,7 @@ app/
 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ExpenseTracker.git
+git clone https://github.com/sanjup143/ExpenseTracker-Android-App.git
 ```
 
 2. Open project in Android Studio
@@ -221,4 +240,4 @@ Android Developer | Kotlin | Firebase | MVVM
 
 # Project Status
 
-Advanced Android Portfolio Project 🚀
+Advanced Android Portfolio Project built for showcasing modern Android development skills using Kotlin, Firebase, MVVM, Room, Hilt, and Material Design 3. 🚀
