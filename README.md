@@ -48,7 +48,9 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 - DataStore Preferences
 
 ## Extra Features
+- Daily Reminder Notifications
 - PDF Report Export
+- Monthly Budget Management
 - Budget Limit Tracking
 - Recent Transactions Dashboard
 - Empty State UI
@@ -73,7 +75,7 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 
 ---
 
-# Architecture
+# Architecture & Design Patterns
 
 This project follows:
 
@@ -225,7 +227,6 @@ google-services.json
 
 # Future Improvements
 
-- Expense Notifications
 - Cloud Backup
 - CSV Export
 - Expense Sharing
@@ -243,4 +244,6 @@ Android Developer | Kotlin | Firebase | MVVM
 
 # Project Status
 
-Advanced Android Portfolio Project built for showcasing modern Android development skills using Kotlin, Firebase, MVVM, Room, Hilt, and Material Design 3. 🚀
+Completed Android Expense Tracker application built with Kotlin, Firebase Authentication, Firestore, MVVM Architecture, Hilt, Room Database, DataStore, StateFlow, MPAndroidChart, Biometric Authentication, PDF Export, Budget Management, and Reminder Notifications.
+
+This project was developed as a portfolio application to demonstrate modern Android development best practices and production-ready architecture.
