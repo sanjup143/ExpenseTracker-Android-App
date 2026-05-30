@@ -19,7 +19,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:gravity="center"
-            android:text="💰"
+            android:text="@string/default_category_icon"
             android:textSize="28sp" />
 
         <LinearLayout

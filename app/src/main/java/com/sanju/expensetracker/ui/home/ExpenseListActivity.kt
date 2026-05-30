@@ -17,33 +17,40 @@ import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.databinding.ActivityExpenseListBinding
 import com.sanju.expensetracker.ui.adapter.ExpenseAdapter
 import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ExpenseListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityExpenseListBinding
     private lateinit var expenseAdapter: ExpenseAdapter
 
-    private lateinit var expenseRepository: ExpenseRepository
+    @Inject
+    lateinit var expenseRepository: ExpenseRepository
 
     private var allExpenses: List<Expense> = emptyList()
     private var selectedFilter: String = ""
-    private var selectedCategory: String = "All Categories"
-    private var selectedSort: String = "Latest First"
+    private var selectedCategory: String = ""
+    private var selectedSort: String = ""
 
-    private val sortOptions = listOf(
-        "Latest First",
-        "Oldest First",
-        "Amount High to Low",
-        "Amount Low to High"
-    )
+    private val sortOptions by lazy {
+        listOf(
+            getString(R.string.latest_first),
+            getString(R.string.oldest_first),
+            getString(R.string.amount_high_to_low),
+            getString(R.string.amount_low_to_high)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        expenseRepository = ExpenseRepository(applicationContext)
-
         binding = ActivityExpenseListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        selectedCategory = getString(R.string.all_categories)
+        selectedSort = getString(R.string.latest_first)
 
         selectedFilter = getString(R.string.all)
 
@@ -112,7 +119,9 @@ class ExpenseListActivity : AppCompatActivity() {
     }
 
     private fun setupCategorySpinner() {
-        val categories = mutableListOf("All Categories")
+        val categories = mutableListOf(
+            getString(R.string.all_categories)
+        )
 
         categories.addAll(
             allExpenses
@@ -138,7 +147,7 @@ class ExpenseListActivity : AppCompatActivity() {
         binding.spinnerCategory.adapter = adapter
 
         if (!categories.contains(selectedCategory)) {
-            selectedCategory = "All Categories"
+            selectedCategory = getString(R.string.all_categories)
         }
 
         val selectedIndex = categories.indexOf(selectedCategory)
@@ -225,16 +234,16 @@ class ExpenseListActivity : AppCompatActivity() {
                             expense.type.equals(selectedFilter, ignoreCase = true)
 
                 val matchesCategory =
-                    selectedCategory == "All Categories" ||
+                    selectedCategory == getString(R.string.all_categories) ||
                             expense.category.equals(selectedCategory, ignoreCase = true)
 
                 matchesSearch && matchesType && matchesCategory
             }
             .let { expenses ->
                 when (selectedSort) {
-                    "Oldest First" -> expenses.sortedBy { it.createdAt }
-                    "Amount High to Low" -> expenses.sortedByDescending { it.amount }
-                    "Amount Low to High" -> expenses.sortedBy { it.amount }
+                    getString(R.string.oldest_first) -> expenses.sortedBy { it.createdAt }
+                    getString(R.string.amount_high_to_low) -> expenses.sortedByDescending { it.amount }
+                    getString(R.string.amount_low_to_high) -> expenses.sortedBy { it.amount }
                     else -> expenses.sortedByDescending { it.createdAt }
                 }
             }

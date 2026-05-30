@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:autofillHints="none"
+        android:importantForAutofill="no"
         android:hint="@string/search_title_or_category"
         android:inputType="text"
         android:minHeight="48dp"
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="20dp"
-        android:text="No expenses found"
+        android:text="@string/no_expenses_found"
         android:textSize="16sp"
         android:visibility="gone" />
 

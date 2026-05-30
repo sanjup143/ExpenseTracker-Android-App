@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -139,7 +140,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                android:text="Dashboard Stats"
+                android:text="@string/dashboard_stats"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -160,7 +161,7 @@
                         android:id="@+id/tvTotalTransactions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Total Transactions: 0"
+                        android:text="@string/total_transactions_zero"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -169,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="This Month: 0"
+                        android:text="@string/this_month_zero"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -199,7 +200,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Highest Income"
+                            android:text="@string/highest_income"
                             android:textSize="14sp" />
 
                         <TextView
@@ -207,7 +208,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="₹0.00"
+                            android:text="@string/amount_zero_decimal"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -232,7 +233,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Highest Expense"
+                            android:text="@string/highest_expense"
                             android:textSize="14sp" />
 
                         <TextView
@@ -240,7 +241,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="₹0.00"
+                            android:text="@string/amount_zero_decimal"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -273,7 +274,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Average Income"
+                            android:text="@string/average_income"
                             android:textSize="14sp" />
 
                         <TextView
@@ -281,7 +282,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="₹0.00"
+                            android:text="@string/amount_zero_decimal"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -306,7 +307,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Average Expense"
+                            android:text="@string/average_expense"
                             android:textSize="14sp" />
 
                         <TextView
@@ -314,7 +315,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="₹0.00"
+                            android:text="@string/amount_zero_decimal"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -342,7 +343,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                android:text="Recent Transactions"
+                android:text="@string/recent_transactions"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -360,7 +361,7 @@
                 android:layout_marginTop="12dp"
                 android:gravity="center"
                 android:padding="20dp"
-                android:text="No transactions yet&#10;Add your first expense"
+                android:text="@string/recent_empty_message"
                 android:textSize="16sp"
                 android:visibility="gone" />
 
@@ -411,7 +412,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Settings" />
+                android:text="@string/settings" />
 
             <Button
                 android:id="@+id/btnLogout"

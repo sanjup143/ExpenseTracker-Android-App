@@ -16,7 +16,7 @@ object ReminderScheduler {
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            1001,
+            Constants.REMINDER_REQUEST_CODE,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

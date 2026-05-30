@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.sanju.expensetracker.utils.Constants
 
 @HiltViewModel
 class ExpenseViewModel @Inject constructor(
@@ -53,7 +54,7 @@ class ExpenseViewModel @Inject constructor(
                     expensesResult.exceptionOrNull()?.message
                         ?: summaryResult.exceptionOrNull()?.message
                         ?: statsResult.exceptionOrNull()?.message
-                        ?: "Failed to load dashboard data"
+                        ?: Constants.ERROR_LOAD_DASHBOARD_DATA
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -82,7 +83,7 @@ class ExpenseViewModel @Inject constructor(
             result.onFailure {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    message = it.message ?: "Failed to delete expense"
+                    message = it.message ?: Constants.ERROR_DELETE_EXPENSE
                 )
             }
         }

@@ -26,13 +26,8 @@ class AuthViewModel : ViewModel() {
             val result = repository.loginUser(email, password)
 
             _authState.value = if (result.isSuccess) {
-
-                AuthState.Success(
-                    result.getOrNull() ?: "Success"
-                )
-
+                AuthState.Success("Success")
             } else {
-
                 AuthState.Error(
                     result.exceptionOrNull()?.message ?: "Unknown Error"
                 )
@@ -52,13 +47,8 @@ class AuthViewModel : ViewModel() {
             val result = repository.registerUser(email, password)
 
             _authState.value = if (result.isSuccess) {
-
-                AuthState.Success(
-                    result.getOrNull() ?: "Success"
-                )
-
+                AuthState.Success("Success")
             } else {
-
                 AuthState.Error(
                     result.exceptionOrNull()?.message ?: "Unknown Error"
                 )

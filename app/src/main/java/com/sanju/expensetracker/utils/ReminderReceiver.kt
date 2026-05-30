@@ -55,7 +55,7 @@ class ReminderReceiver : BroadcastReceiver() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             NotificationManagerCompat.from(context).notify(
-                1001,
+                Constants.REMINDER_NOTIFICATION_ID,
                 notification
             )
         }

@@ -10,24 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="Settings"
+        android:text="@string/settings"
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchDarkMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:minHeight="48dp"
-        android:text="Dark Mode"
+        android:text="@string/dark_mode"
         android:textSize="18sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Currency"
+        android:text="@string/currency"
         android:textSize="18sp"
         android:textStyle="bold" />
 

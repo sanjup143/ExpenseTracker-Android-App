@@ -5,6 +5,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.sanju.expensetracker.R
 
 object BiometricHelper {
 
@@ -50,15 +51,31 @@ object BiometricHelper {
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
 
-                    onError("Authentication failed")
+                    onError(
+                        activity.getString(
+                            R.string.authentication_failed
+                        )
+                    )
                 }
             }
         )
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric Login")
-            .setSubtitle("Use fingerprint to login")
-            .setNegativeButtonText("Cancel")
+            .setTitle(
+                activity.getString(
+                    R.string.biometric_login
+                )
+            )
+            .setSubtitle(
+                activity.getString(
+                    R.string.use_fingerprint_login
+                )
+            )
+            .setNegativeButtonText(
+                activity.getString(
+                    R.string.cancel
+                )
+            )
             .build()
 
         biometricPrompt.authenticate(promptInfo)

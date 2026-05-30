@@ -10,13 +10,15 @@ class AuthRepository {
     suspend fun loginUser(
         email: String,
         password: String
-    ): Result<String> {
+    ): Result<Unit> {
 
         return try {
 
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            firebaseAuth
+                .signInWithEmailAndPassword(email, password)
+                .await()
 
-            Result.success("Login Successful")
+            Result.success(Unit)
 
         } catch (e: Exception) {
 
@@ -28,13 +30,15 @@ class AuthRepository {
     suspend fun registerUser(
         email: String,
         password: String
-    ): Result<String> {
+    ): Result<Unit> {
 
         return try {
 
-            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            firebaseAuth
+                .createUserWithEmailAndPassword(email, password)
+                .await()
 
-            Result.success("Registration Successful")
+            Result.success(Unit)
 
         } catch (e: Exception) {
 

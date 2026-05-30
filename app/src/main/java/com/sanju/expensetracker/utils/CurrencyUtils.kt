@@ -7,16 +7,14 @@ object CurrencyUtils {
 
     fun formatAmount(
         amount: Double,
-        currencySymbol: String = "₹"
+        currencySymbol: String = Constants.SYMBOL_INR
     ): String {
 
         val locale = when (currencySymbol) {
 
-            "$" -> Locale.US
-
-            "€" -> Locale.GERMANY
-
-            "£" -> Locale.UK
+            Constants.SYMBOL_USD -> Locale.US
+            Constants.SYMBOL_EUR -> Locale.GERMANY
+            Constants.SYMBOL_GBP -> Locale.UK
 
             else -> Locale.Builder()
                 .setLanguage("en")

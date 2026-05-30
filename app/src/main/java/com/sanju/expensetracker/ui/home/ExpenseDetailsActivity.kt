@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import com.sanju.expensetracker.R
 
 @AndroidEntryPoint
 class ExpenseDetailsActivity : AppCompatActivity() {
@@ -57,10 +58,25 @@ class ExpenseDetailsActivity : AppCompatActivity() {
 
         binding.tvTitle.text = title
         binding.tvAmount.text = CurrencyUtils.formatAmount(amount)
-        binding.tvCategory.text = "Category: $category"
-        binding.tvType.text = "Type: $type"
-        binding.tvDate.text = "Date: ${formatDate(createdAt)}"
-        binding.tvTime.text = "Time: ${formatTime(createdAt)}"
+        binding.tvCategory.text = getString(
+            R.string.category_label,
+            category
+        )
+
+        binding.tvType.text = getString(
+            R.string.type_label,
+            type
+        )
+
+        binding.tvDate.text = getString(
+            R.string.date_label,
+            formatDate(createdAt)
+        )
+
+        binding.tvTime.text = getString(
+            R.string.time_label,
+            formatTime(createdAt)
+        )
     }
 
     private fun setupClickListeners() {
@@ -99,7 +115,7 @@ class ExpenseDetailsActivity : AppCompatActivity() {
             result.onFailure {
                 Toast.makeText(
                     this@ExpenseDetailsActivity,
-                    it.message ?: "Delete failed",
+                    it.message ?: getString(R.string.delete_failed),
                     Toast.LENGTH_LONG
                 ).show()
             }

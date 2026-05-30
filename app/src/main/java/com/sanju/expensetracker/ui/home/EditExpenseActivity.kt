@@ -8,19 +8,21 @@ import com.sanju.expensetracker.R
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.databinding.ActivityEditExpenseBinding
 import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditExpenseActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditExpenseBinding
 
-    private lateinit var expenseRepository: ExpenseRepository
+    @Inject
+    lateinit var expenseRepository: ExpenseRepository
 
     private var expenseId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityEditExpenseBinding.inflate(layoutInflater)
         setContentView(binding.root)

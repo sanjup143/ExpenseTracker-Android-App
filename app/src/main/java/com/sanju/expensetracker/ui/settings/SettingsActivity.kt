@@ -11,6 +11,7 @@ import com.sanju.expensetracker.databinding.ActivitySettingsBinding
 import com.sanju.expensetracker.ui.viewmodel.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.sanju.expensetracker.utils.Constants
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
@@ -20,10 +21,10 @@ class SettingsActivity : AppCompatActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()
 
     private val currencies = listOf(
-        "₹ INR",
-        "$ USD",
-        "€ EUR",
-        "£ GBP"
+        Constants.CURRENCY_INR,
+        Constants.CURRENCY_USD,
+        Constants.CURRENCY_EUR,
+        Constants.CURRENCY_GBP
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +57,7 @@ class SettingsActivity : AppCompatActivity() {
             settingsViewModel.saveDarkModeEnabled(isChecked)
         }
 
-        binding.spinnerCurrency.setOnItemSelectedListener(
+        binding.spinnerCurrency.onItemSelectedListener =
             object : android.widget.AdapterView.OnItemSelectedListener {
 
                 override fun onItemSelected(
@@ -75,7 +76,6 @@ class SettingsActivity : AppCompatActivity() {
                     // No action needed
                 }
             }
-        )
     }
 
     private fun observeViewModel() {

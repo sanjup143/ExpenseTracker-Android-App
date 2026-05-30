@@ -27,7 +27,7 @@ import com.sanju.expensetracker.utils.CurrencyUtils
 import com.sanju.expensetracker.utils.ReminderScheduler
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
+import com.sanju.expensetracker.data.model.Expense
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
@@ -40,7 +40,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var recentExpenseAdapter: ExpenseAdapter
 
-    private var selectedCurrency: String = "₹"
+    private var selectedCurrency: String = ""
 
     private val notificationPermissionLauncher =
         registerForActivityResult(
@@ -140,11 +140,15 @@ class HomeActivity : AppCompatActivity() {
 
                         val stats = uiState.dashboardStats
 
-                        binding.tvTotalTransactions.text =
-                            "Total Transactions: ${stats.totalTransactions}"
+                        binding.tvTotalTransactions.text = getString(
+                            R.string.total_transactions_label,
+                            stats.totalTransactions
+                        )
 
-                        binding.tvThisMonthTransactions.text =
-                            "This Month: ${stats.thisMonthTransactions}"
+                        binding.tvThisMonthTransactions.text = getString(
+                            R.string.this_month_transactions_label,
+                            stats.thisMonthTransactions
+                        )
 
                         binding.tvHighestIncome.text =
                             CurrencyUtils.formatAmount(stats.highestIncome, selectedCurrency)
@@ -204,7 +208,7 @@ class HomeActivity : AppCompatActivity() {
             CurrencyUtils.formatAmount(balance, selectedCurrency)
     }
 
-    private fun openExpenseDetailsScreen(expense: com.sanju.expensetracker.data.model.Expense) {
+    private fun openExpenseDetailsScreen(expense: Expense) {
         val intent = Intent(this, ExpenseDetailsActivity::class.java)
 
         intent.putExtra("expenseId", expense.id)

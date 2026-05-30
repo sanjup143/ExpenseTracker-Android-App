@@ -11,12 +11,16 @@ import com.sanju.expensetracker.databinding.ActivityMonthlySummaryBinding
 import com.sanju.expensetracker.utils.CurrencyUtils
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MonthlySummaryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMonthlySummaryBinding
 
-    private lateinit var expenseRepository: ExpenseRepository
+    @Inject
+    lateinit var expenseRepository: ExpenseRepository
 
     private val months = listOf(
         "January",
@@ -35,8 +39,6 @@ class MonthlySummaryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityMonthlySummaryBinding.inflate(layoutInflater)
         setContentView(binding.root)

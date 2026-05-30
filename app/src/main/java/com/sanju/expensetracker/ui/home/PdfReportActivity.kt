@@ -10,21 +10,24 @@ import androidx.lifecycle.lifecycleScope
 import com.sanju.expensetracker.R
 import com.sanju.expensetracker.data.repository.ExpenseRepository
 import com.sanju.expensetracker.databinding.ActivityPdfReportBinding
+import com.sanju.expensetracker.utils.Constants
 import com.sanju.expensetracker.utils.CurrencyUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PdfReportActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPdfReportBinding
 
-    private lateinit var expenseRepository: ExpenseRepository
+    @Inject
+    lateinit var expenseRepository: ExpenseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        expenseRepository = ExpenseRepository(applicationContext)
 
         binding = ActivityPdfReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -89,7 +92,7 @@ class PdfReportActivity : AppCompatActivity() {
 
                         y += 50
 
-                        if (expense.type == getString(R.string.income)) {
+                        if (expense.type == Constants.TYPE_INCOME) {
                             totalIncome += expense.amount
                         } else {
                             totalExpense += expense.amount
@@ -164,7 +167,7 @@ class PdfReportActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Toast.makeText(
                         this@PdfReportActivity,
-                        e.message,
+                        e.message ?: getString(R.string.unknown_error),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -173,7 +176,7 @@ class PdfReportActivity : AppCompatActivity() {
             result.onFailure {
                 Toast.makeText(
                     this@PdfReportActivity,
-                    it.message,
+                    it.message ?: getString(R.string.unknown_error),
                     Toast.LENGTH_LONG
                 ).show()
             }
