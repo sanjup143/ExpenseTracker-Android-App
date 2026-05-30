@@ -183,15 +183,18 @@ app/
 │   ├── adapter/
 │   ├── auth/
 │   ├── home/
-│   └── settings/
+│   ├── settings/
+│   ├── state/
+│   └── viewmodel/
 │
-├── state/
 ├── utils/
-├── viewmodel/
+│
+├── ExpenseTrackerApp.kt
 │
 ├── res/
-│   ├── layout/
 │   ├── drawable/
+│   ├── layout/
+│   ├── mipmap/
 │   ├── values/
 │   └── xml/
 │
