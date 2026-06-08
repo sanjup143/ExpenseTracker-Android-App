@@ -1,18 +1,24 @@
-# Expense Tracker Android App
+<p align="center">
+  <img src="screenshots/app_icon.png" width="120">
+</p>
 
-A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM Architecture, Room Database, Hilt, and StateFlow.
+# 💰 Expense Tracker Android App
+
+A modern Android Expense Tracker application built using Kotlin, MVVM Architecture, Firebase Authentication, Firestore, Room Database, Hilt, StateFlow, DataStore, and Material Design 3.
+
+The application helps users track income and expenses, analyze spending habits, manage budgets, generate PDF reports, and access data securely using biometric authentication.
 
 ---
 
-# Features
+## Features
 
-## Authentication & Security
+### Authentication & Security
 - Firebase Authentication
 - User Login & Registration
 - Biometric Fingerprint Login
 - Splash Screen Session Management
 
-## Expense Management
+### Expense Management
 - Add Income & Expenses
 - Edit & Delete Transactions
 - Transaction Details Screen
@@ -23,7 +29,7 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 - Sort by Latest / Oldest
 - Sort by Amount
 
-## Dashboard & Analytics
+### Dashboard & Analytics
 - Dashboard Statistics
 - Highest Income Tracking
 - Highest Expense Tracking
@@ -34,20 +40,20 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 - Category Analytics
 - Monthly Summary
 
-## Settings & Personalization
+### Settings & Personalization
 - Persistent Dark Mode
 - Multi-Currency Support
 - Currency Selection (INR, USD, EUR, GBP)
 - Settings Screen
 
-## Offline & Data Management
+### Offline & Data Management
 - Firebase Firestore Database
 - Room Database Offline Cache
 - Offline Data Access
 - Swipe To Refresh
 - DataStore Preferences
 
-## Extra Features
+### Extra Features
 - Daily Reminder Notifications
 - PDF Report Export
 - Monthly Budget Management
@@ -57,7 +63,7 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 
 ---
 
-# Tech Stack
+## Tech Stack
 
 - Kotlin
 - Android Studio
@@ -75,7 +81,7 @@ A modern Android Expense Tracker application built using Kotlin, Firebase, MVVM 
 
 ---
 
-# Architecture & Design Patterns
+## Architecture & Design Patterns
 
 This project follows:
 
@@ -87,7 +93,7 @@ This project follows:
 
 ---
 
-# Screenshots
+## Screenshots
 
 ## Login Screen
 ![Login Screen](screenshots/login_screen.png)
@@ -169,7 +175,7 @@ This project follows:
 
 ---
 
-# Folder Structure
+## Folder Structure
 
 ```text
 app/
@@ -205,7 +211,7 @@ app/
 
 ---
 
-# Installation
+## Installation
 
 1. Clone the repository
 
@@ -225,7 +231,7 @@ google-services.json
 
 ---
 
-# Future Improvements
+## Future Improvements
 
 - Cloud Backup
 - CSV Export
@@ -234,15 +240,17 @@ google-services.json
 
 ---
 
-# Author
+## Author
 
-## Sanju Parmar
+### Sanju Parmar
 
 Android Developer | Kotlin | Firebase | MVVM
 
+GitHub: https://github.com/sanjup143
+
 ---
 
-# Project Status
+## Project Status
 
 Completed Android Expense Tracker application built with Kotlin, Firebase Authentication, Firestore, MVVM Architecture, Hilt, Room Database, DataStore, StateFlow, MPAndroidChart, Biometric Authentication, PDF Export, Budget Management, and Reminder Notifications.
 
