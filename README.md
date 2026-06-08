@@ -211,6 +211,12 @@ app/
 
 ---
 
+## Download APK
+
+[Download Latest APK](https://github.com/sanjup143/ExpenseTracker-Android-App/releases)
+
+---
+
 ## Installation
 
 1. Clone the repository
